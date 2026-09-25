@@ -1,0 +1,54 @@
+.hero {
+  padding-block: clamp(48px, 8vw, 112px);
+  background-image: radial-gradient(
+    circle at top right,
+    var(--teal-soft),
+    transparent 55%
+  );
+}
+
+/* align-items: stretch (rather than center) makes the two grid columns match
+   height — the hero visual sizes itself to whatever height hero-copy takes,
+   instead of a hardcoded height, and stays that size as its own answer reveals. */
+.hero-inner {
+  display: grid;
+  /* minmax(0, Nfr), not plain Nfr: without the 0 floor, each track's automatic
+     minimum defaults to its content's min-content size, which for the hero
+     visual's long "row" of source/check text let its column overflow its fr
+     share, so the visual fell short of the shell's own right edge — the hero
+     read narrower than every other section, whose content actually fills the
+     shell's padded width edge to edge. */
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: stretch;
+}
+
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+}
+
+/* The kicker's own margin-bottom would stack on top of hero-copy's flex gap,
+   doubling the space between the eyebrow and the headline it sits above. Unlike
+   other kickers on the page, this one is a full phrase rather than two or three
+   words, so it also needs to wrap instead of forcing the page wider on mobile. */
+.hero-copy .hero-eyebrow {
+  margin-bottom: 0;
+  max-width: 100%;
+  white-space: normal;
+  font-size: var(--text-sm);
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+  }
+}

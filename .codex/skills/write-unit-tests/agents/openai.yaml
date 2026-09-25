@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Unit Tests"
+  short_description: "Create focused pytest unit tests"
+  default_prompt: "Use $write-unit-tests to add focused unit tests for this backend change."

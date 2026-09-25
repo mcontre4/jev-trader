@@ -1,0 +1,33 @@
+.footer {
+  border-top: 1px solid var(--line);
+  padding-block: var(--s-6);
+  background: var(--surface);
+}
+
+.footer-inner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--s-5);
+  flex-wrap: wrap;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.footer-descriptor {
+  margin: 0;
+}
+
+.footer nav {
+  display: flex;
+  flex-direction: row;
+  gap: var(--s-5);
+  font-size: var(--text-sm);
+  color: var(--slate);
+  flex-wrap: wrap;
+  margin-left: auto;
+}

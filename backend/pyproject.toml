@@ -1,0 +1,57 @@
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [{ include = "app", from = "src" }]
+
+[project]
+name = "backend"
+version = "0.1.0"
+description = "FastAPI backend using hexagonal architecture"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.14,<2",
+    "fastapi>=0.115,<1",
+    "langchain>=0.3,<2",
+    "langgraph>=0.2,<2",
+    "psycopg[binary]>=3.2,<4",
+    "redis>=5,<7",
+    "sqlalchemy>=2,<3",
+    "uvicorn[standard]>=0.30,<1",
+]
+
+[tool.poetry.group.dev.dependencies]
+tach = "^0.35.0"
+httpx = ">=0.27,<1"
+mypy = ">=1.13,<2"
+pytest = ">=8,<9"
+pytest-asyncio = ">=0.24,<1"
+ruff = ">=0.8,<1"
+testcontainers = {version = ">=4.14,<5", extras = ["postgres"]}
+pytest-cov = "^7.1.0"
+pre-commit = "^4.6.1"
+pytest-testmon = "^2.2.0"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "tests"]
+markers = ["integration: requires a disposable real infrastructure dependency"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.coverage.run]
+omit = ["src/app/shared/domain/clock.py"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

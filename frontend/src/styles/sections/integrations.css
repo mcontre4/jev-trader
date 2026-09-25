@@ -1,0 +1,58 @@
+/* The one dark, high-contrast band on the page: same beat as the rest of the
+   site ("works with your stack") but rendered as a full-bleed near-black
+   section so the page has one deliberate contrast punch, not eight quiet ones. */
+.integrations {
+  background: var(--ink-950);
+  color: var(--on-dark);
+}
+
+.integrations .kicker {
+  background: var(--on-dark-line);
+  color: var(--on-dark);
+}
+
+.integrations .kicker::before {
+  background: var(--on-dark);
+}
+
+.integrations h2 {
+  color: var(--on-dark);
+}
+
+.integrations .lead {
+  color: var(--on-dark-soft);
+}
+
+.integrations-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
+}
+
+.integrations-inner .section-header {
+  margin-bottom: 0;
+}
+
+.integration-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-3);
+}
+
+.integration-chip {
+  background: var(--ink-900);
+  border: 1px solid var(--on-dark-line);
+  border-radius: var(--r-sm);
+  padding: var(--s-3) var(--s-4);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--on-dark);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .integrations-inner {
+    grid-template-columns: 1fr;
+  }
+}

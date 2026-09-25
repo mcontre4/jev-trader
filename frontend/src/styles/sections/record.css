@@ -1,0 +1,246 @@
+/* UnitRecord: an application-shell mockup of the core Sorno screen, tabbed by data domain. */
+
+.record-frame {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--e-3);
+  background: var(--surface);
+}
+
+.record-chrome {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  padding: 0 var(--s-4);
+  height: 46px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: var(--text-xs);
+}
+
+.record-chrome-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-right: auto;
+  font-weight: 700;
+}
+
+.record-chrome span:not(.record-chrome-brand) {
+  opacity: 0.6;
+}
+
+.record-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+  padding: var(--s-5);
+  border-bottom: 1px solid var(--line);
+}
+
+.record-head-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--s-2);
+}
+
+.record-tabs {
+  display: flex;
+  gap: var(--s-1);
+  padding: 0 var(--s-4);
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.record-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.record-tabs button {
+  min-height: 44px;
+  padding: 0 var(--s-3);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--slate);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
+}
+
+.record-tabs button:hover {
+  color: var(--ink);
+}
+
+.record-tabs button.selected {
+  color: var(--ink);
+  border-bottom-color: var(--teal);
+}
+
+.record-panel {
+  padding: var(--s-5);
+  min-height: 300px;
+}
+
+.record-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.record-event {
+  display: grid;
+  grid-template-columns: 130px 1fr auto;
+  gap: var(--s-4);
+  align-items: center;
+  padding: var(--s-3);
+  border-left: 2px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.record-event:last-child {
+  border-bottom: none;
+}
+
+.record-event-blocked {
+  border-left-color: var(--status-blocked);
+}
+
+.record-event-warn {
+  border-left-color: var(--status-warn);
+}
+
+.record-event-text {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.record-findings {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-4) var(--s-6);
+}
+
+.record-finding dd {
+  margin: 0;
+  color: var(--ink);
+}
+
+.record-photos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-3);
+  margin-top: var(--s-5);
+}
+
+.record-photo {
+  aspect-ratio: 4 / 3;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+
+.record-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.record-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.record-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-3) 0;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.record-row:last-child {
+  border-bottom: none;
+}
+
+.record-row-label {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.record-table-wrap {
+  overflow-x: auto;
+}
+
+/* Scoped to .record. Bare element selectors here leaked onto the MES routing table
+   in the problem section and collapsed it into stacked cells at phone widths. */
+.record table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.record th {
+  text-align: left;
+  font-size: var(--text-xs);
+  color: var(--slate);
+  text-transform: uppercase;
+  padding: var(--s-2) var(--s-3);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.record td {
+  padding: var(--s-3);
+  border-bottom: 1px solid var(--line);
+}
+
+@media (max-width: 640px) {
+  .record-tabs {
+    mask-image: linear-gradient(to right, black 85%, transparent);
+  }
+
+  .record-event {
+    grid-template-columns: 1fr;
+    gap: var(--s-1);
+    /* Without this the source badge stretches the full row width instead of
+       staying a chip, since it's the only item in its stacked grid cell. */
+    justify-items: start;
+  }
+
+  .record-findings {
+    grid-template-columns: 1fr;
+  }
+
+  .record table thead {
+    display: none;
+  }
+
+  .record table tr {
+    display: block;
+    border-bottom: 1px solid var(--line);
+    padding: var(--s-3) 0;
+  }
+
+  .record table td {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-4);
+    border: none;
+    padding: var(--s-1) 0;
+  }
+
+  .record table td::before {
+    content: attr(data-label);
+    color: var(--slate);
+    font-size: var(--text-xs);
+  }
+}

@@ -1,0 +1,305 @@
+.ask-panel {
+  display: grid;
+  grid-template-columns: minmax(240px, 340px) 1fr;
+  gap: var(--s-5);
+}
+
+.ask-questions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.ask-questions button {
+  text-align: left;
+  min-height: 44px;
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  line-height: 1.4;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.ask-questions button:hover {
+  border-color: var(--line-strong);
+}
+
+.ask-questions button.selected {
+  background: var(--teal-soft);
+  border-color: var(--teal);
+}
+
+/* Same window chrome as the other Sorno screens on the page (frag-window,
+   pipeline-window): a bordered card with a dark title bar, so this reads as the
+   product's own interface rather than a plain card. */
+.ask-window {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  box-shadow: var(--e-3);
+  overflow: hidden;
+}
+
+.ask-chrome {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: var(--ink);
+  color: white;
+}
+
+.ask-sorno-title {
+  font-family: var(--font-sans);
+  font-weight: 700;
+}
+
+.ask-chrome-view {
+  font-size: var(--text-xs);
+  color: var(--slate-2);
+  margin-right: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Fixed-height chat window: messages keep their natural size and stack top-down,
+   like any real chat log. `justify-content: flex-end` looked right for short
+   threads, but it makes overflow happen on the *start* side of the box — and
+   browsers don't count start-side overflow toward scrollHeight, so nothing was
+   ever actually scrollable no matter how the scrollbar was styled. Plain
+   top-down stacking plus the scrollTop effect in AskSorno (auto-following the
+   turn currently being typed) gives the same "always see the latest message"
+   behavior while keeping the box genuinely scrollable back through history. */
+.ask-thread {
+  background: var(--surface);
+  padding: var(--s-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  height: 560px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+/* Firefox gets a styled scrollbar via scrollbar-width/-color above; Chrome, Edge,
+   and Safari need this explicit pseudo-element styling instead, since without it
+   they fall back to the OS's overlay scrollbar — invisible until you scroll on
+   macOS by default, which reads as "no scrollbar" even though overflow works. */
+.ask-thread::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ask-thread::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ask-thread::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: var(--r-pill);
+}
+
+.ask-thread::-webkit-scrollbar-thumb:hover {
+  background: var(--slate-2);
+}
+
+.ask-msg {
+  display: flex;
+  flex-direction: row;
+  gap: var(--s-3);
+  align-items: flex-start;
+}
+
+/* The user's own turn: right-aligned, no avatar, reads as a message they sent
+   rather than as narration — the rest of the thread is Sorno replying to it. */
+.ask-msg-user {
+  align-self: flex-end;
+  max-width: 80%;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: var(--s-2) var(--s-4);
+  font-size: var(--text-sm);
+  color: var(--ink);
+}
+
+.ask-msg-sorno {
+  align-self: stretch;
+}
+
+.ask-msg-body p {
+  font-size: var(--text-md);
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+.ask-avatar {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: var(--r-sm);
+  background: var(--teal);
+  color: white;
+  display: grid;
+  place-items: center;
+  font-size: var(--text-xs);
+  font-weight: 800;
+}
+
+.ask-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--teal);
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: ask-blink 1s steps(1) infinite;
+}
+
+@keyframes ask-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ask-caret {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* The generated document a "create/draft/open" request produces. Reads as a file
+   attached to the message rather than more prose, so the deliverable stands out
+   from the sentence confirming it. */
+.ask-attachment {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  align-self: flex-start;
+  margin-top: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  max-width: 100%;
+}
+
+.ask-attachment-icon {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-sm);
+  background: var(--teal-soft);
+  color: var(--teal-strong);
+  display: grid;
+  place-items: center;
+}
+
+.ask-attachment-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ask-attachment-name {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ask-attachment-detail {
+  font-size: var(--text-xs);
+  color: var(--slate-2);
+}
+
+.ask-evidence {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+
+.ask-sources {
+  display: flex;
+  flex-direction: row;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+
+.ask-note {
+  background: var(--status-warn-soft);
+  border-left: 3px solid var(--status-warn);
+  border-radius: var(--r-sm);
+  padding: var(--s-3) var(--s-4);
+  font-size: var(--text-sm);
+  color: var(--ink);
+}
+
+/* The decorative composer bar: completes the chat look without implying a real
+   free-text model sits behind it (see the comment in AskSorno.tsx). Disabled
+   controls still get real, legible styling — a greyed-out native control here
+   would read as broken rather than illustrative. */
+.ask-composer {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-4) var(--s-5);
+  background: var(--surface-sunken);
+  border-top: 1px solid var(--line);
+}
+
+.ask-composer-input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  padding: 0 var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--ink);
+}
+
+.ask-composer-input::placeholder {
+  color: var(--slate-2);
+}
+
+.ask-composer-input:disabled {
+  cursor: not-allowed;
+}
+
+.ask-composer-send {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-pill);
+  border: none;
+  background: var(--ink);
+  color: var(--on-dark);
+  display: grid;
+  place-items: center;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .ask-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .ask-thread {
+    height: 440px;
+  }
+}

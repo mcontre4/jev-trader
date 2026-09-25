@@ -1,0 +1,37 @@
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px, 5vw, 64px);
+  align-items: start;
+}
+
+/* Both embeds share the same shell so the Tally form and the Calendly scheduler
+   read as two halves of one section rather than two pasted-in widgets. */
+.tally,
+.calendly {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.calendly-inline-widget,
+.tally iframe {
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+/* dynamicHeight=1 means Tally posts its own height; this is only the pre-load
+   floor so the section doesn't collapse before the iframe reports back. */
+.tally iframe {
+  display: block;
+  width: 100%;
+  min-height: 280px;
+}
+
+@media (max-width: 900px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+}

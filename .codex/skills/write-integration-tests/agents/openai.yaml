@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Integration Tests"
+  short_description: "Test backend adapters with real services"
+  default_prompt: "Use $write-integration-tests to add an isolated backend integration test."

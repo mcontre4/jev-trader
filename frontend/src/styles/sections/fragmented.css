@@ -1,0 +1,660 @@
+/* FragmentedAnswer: five systems, five conflicting answers, then one reconciled answer. */
+
+.frag-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) 1fr;
+  gap: var(--s-5);
+}
+
+.frag-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.frag-tabs button {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--s-3) var(--s-4);
+  background: transparent;
+  border: 1px solid transparent;
+  border-left: 2px solid var(--line);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+.frag-tabs button:hover {
+  background: var(--surface);
+}
+
+.frag-tabs button.selected {
+  background: var(--surface);
+  border-color: var(--line);
+  border-left-color: var(--teal);
+  box-shadow: var(--e-1);
+}
+
+.frag-tab-label {
+  font-weight: 700;
+  font-size: var(--text-sm);
+  color: var(--ink);
+}
+
+.frag-tab-detail {
+  font-size: var(--text-xs);
+  color: var(--slate-2);
+}
+
+/* The view is a caption plus a window. Reserves height so switching sources doesn't
+   jump the layout; only worth doing in the two-column layout, since stacked it just
+   reads as dead space. */
+.frag-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  min-height: 420px;
+}
+
+/* Our read on the system, sitting above the window as its caption. Deliberately
+   unboxed so it reads as a heading for the screenshot, not a second window. */
+.frag-verdict {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+  padding-left: var(--s-4);
+  border-left: 3px solid var(--line-strong);
+}
+
+.frag-verdict-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  flex: 1 1 320px;
+}
+
+.frag-verdict-label {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+
+.frag-verdict-text {
+  font-size: var(--text-md);
+  color: var(--ink);
+  font-weight: 600;
+  line-height: 1.5;
+  max-width: 62ch;
+}
+
+.frag-verdict-elapsed {
+  font-size: var(--text-xs);
+  color: var(--slate-2);
+  white-space: nowrap;
+}
+
+.frag-verdict-warn {
+  border-left-color: var(--status-warn);
+}
+
+.frag-verdict-warn .frag-verdict-label {
+  color: var(--status-warn);
+}
+
+.frag-verdict-blocked {
+  border-left-color: var(--status-blocked);
+}
+
+.frag-verdict-blocked .frag-verdict-label {
+  color: var(--status-blocked);
+}
+
+/* The window frame: chrome bar, screen body, status bar. Padding lives on the inner
+   regions so the chrome and status bar run edge to edge. */
+.frag-window {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  box-shadow: var(--e-2);
+  overflow: hidden;
+}
+
+.frag-chrome-stamp {
+  font-size: var(--text-xs);
+  color: var(--slate-2);
+  white-space: nowrap;
+}
+
+.frag-chrome {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface-sunken);
+  border-bottom: 1px solid var(--line);
+}
+
+.frag-dots {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.frag-dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--r-pill);
+  background: var(--line-strong);
+}
+
+.frag-chrome-title {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--ink);
+  text-transform: uppercase;
+}
+
+.frag-chrome-record {
+  font-size: var(--text-xs);
+  color: var(--slate-2);
+  margin-right: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.frag-screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding: var(--s-4);
+  flex: 1;
+}
+
+.frag-answer {
+  font-size: var(--text-md);
+  color: var(--ink);
+  font-weight: 700;
+  letter-spacing: var(--tracking-heading);
+}
+
+.frag-statusbar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface-sunken);
+  border-top: 1px solid var(--line);
+  font-size: var(--text-xs);
+}
+
+.frag-statusbar .mono {
+  color: var(--slate-2);
+  margin-right: auto;
+}
+
+/* ---- The tally of the failed search, and the Sorno heading ---- */
+
+/* A scoreboard rather than a paragraph. The counts previously ran together as bold
+   phrases on one line ("5 systems checked  28 minutes"), which read as a run-on and
+   gave the numbers no weight of their own. */
+.frag-tally {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+  padding: var(--s-6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.frag-tally-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-5);
+}
+
+/* Hairline rules between the stats, not around them, so the three read as one line
+   of a scoreboard. */
+.frag-stat + .frag-stat {
+  padding-left: var(--s-5);
+  border-left: 1px solid var(--line);
+}
+
+.frag-stat-value {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  letter-spacing: var(--tracking-display);
+  line-height: 1;
+  color: var(--ink);
+}
+
+.frag-stat-label {
+  margin-top: var(--s-2);
+  font-size: var(--text-sm);
+  color: var(--slate);
+}
+
+.frag-stat-blocked .frag-stat-value {
+  color: var(--status-blocked);
+}
+
+.frag-stat-blocked .frag-stat-label {
+  color: var(--status-blocked);
+  font-weight: 600;
+}
+
+.frag-tally-foot {
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--line);
+}
+
+.frag-tally-detail {
+  font-size: var(--text-sm);
+  color: var(--slate);
+  max-width: 72ch;
+}
+
+/* Heading for the Sorno window, so the payoff is labelled rather than implied.
+   Block layout matching .section-header, so the kicker's own margin controls the
+   spacing rather than fighting a flex gap. */
+.frag-outcome {
+  display: block;
+  max-width: 62ch;
+  margin-top: var(--s-5);
+}
+
+.frag-outcome h3 {
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-display);
+}
+
+.frag-outcome .lead {
+  margin-top: var(--s-4);
+}
+
+/* ---- The Sorno answer, framed as a sixth screen ---- */
+
+.frag-sorno {
+  width: 100%;
+  border-color: var(--teal);
+  box-shadow: var(--e-3);
+}
+
+.frag-chrome-sorno {
+  background: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.frag-chrome-sorno .frag-chrome-title {
+  color: white;
+}
+
+.frag-sorno-title {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  text-transform: none;
+}
+
+.frag-chrome-sorno .frag-chrome-record {
+  color: var(--slate-2);
+}
+
+.frag-sorno .frag-answer {
+  font-size: var(--text-xl);
+}
+
+.frag-sorno-body {
+  font-size: var(--text-base);
+  color: var(--slate);
+  max-width: 72ch;
+}
+
+/* Blinking cursor on whichever line of the reconciled answer is still typing. */
+.frag-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--teal);
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: frag-blink 1s steps(1) infinite;
+}
+
+@keyframes frag-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frag-caret {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+.frag-evidence {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+
+.frag-evidence-label {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--slate);
+  text-transform: uppercase;
+}
+
+/* ---- Screen: field record (ERP, QMS) ---- */
+
+.frag-fields {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.frag-fields > div {
+  display: grid;
+  grid-template-columns: minmax(110px, 40%) 1fr;
+  gap: var(--s-3);
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.frag-fields > div:last-child {
+  border-bottom: none;
+}
+
+.frag-fields dt {
+  font-size: var(--text-xs);
+  color: var(--slate);
+}
+
+.frag-fields dd {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Scoped to dd so these beat the `.frag-fields dd` colour above on specificity. */
+.frag-fields dd.frag-value-warn { color: var(--status-warn); }
+.frag-fields dd.frag-value-blocked { color: var(--status-blocked); }
+.frag-fields dd.frag-value-idle {
+  color: var(--slate-2);
+  font-weight: 500;
+  font-style: italic;
+}
+
+/* ---- Screen: operation table (MES) ---- */
+
+.frag-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.frag-table th {
+  text-align: left;
+  font-size: var(--text-xs);
+  color: var(--slate);
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: var(--s-2);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.frag-table td {
+  padding: var(--s-2);
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.frag-table tr:last-child td {
+  border-bottom: none;
+}
+
+.frag-table .frag-row-blocked td:first-child {
+  box-shadow: inset 2px 0 0 var(--status-blocked);
+}
+
+/* ---- Screen: file listing (shared drive) ---- */
+
+.frag-files {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.frag-file {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-2);
+  border-radius: var(--r-sm);
+  background: var(--surface-sunken);
+}
+
+.frag-file-preview {
+  width: 38px;
+  height: 28px;
+  object-fit: cover;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.frag-file-name {
+  font-size: var(--text-sm);
+  color: var(--ink);
+}
+
+.frag-file-meta {
+  font-size: var(--text-xs);
+  color: var(--slate-2);
+  white-space: nowrap;
+}
+
+.frag-file-empty {
+  margin-top: var(--s-2);
+  font-size: var(--text-xs);
+  color: var(--slate-2);
+  font-style: italic;
+}
+
+/* ---- Screen: message thread (shift supervisor) ---- */
+
+.frag-thread {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.frag-msg {
+  display: flex;
+  gap: var(--s-3);
+  align-items: flex-start;
+}
+
+.frag-msg-mine {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.frag-avatar {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: var(--r-pill);
+  background: var(--teal);
+  color: white;
+  display: grid;
+  place-items: center;
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+
+.frag-msg-meta {
+  font-size: var(--text-xs);
+  color: var(--slate);
+  font-weight: 600;
+  margin-bottom: var(--s-1);
+}
+
+.frag-msg-meta span {
+  color: var(--slate-2);
+  font-weight: 400;
+  margin-left: var(--s-2);
+}
+
+.frag-bubble {
+  display: inline-block;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-md);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  text-align: left;
+}
+
+.frag-bubble-them {
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-top-left-radius: var(--r-sm);
+}
+
+.frag-bubble-me {
+  background: var(--teal-soft);
+  border: 1px solid var(--teal);
+  color: var(--ink);
+  border-top-right-radius: var(--r-sm);
+}
+
+.frag-typing {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--text-xs);
+  color: var(--slate-2);
+  font-style: italic;
+}
+
+.frag-typing i {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: var(--line-strong);
+}
+
+.frag-caveat {
+  font-size: var(--text-sm);
+  color: var(--slate);
+}
+
+.frag-resolve {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-4);
+  margin-top: var(--s-6);
+}
+
+.frag-conflict {
+  font-size: var(--text-sm);
+  color: var(--status-warn);
+  font-weight: 600;
+}
+
+.frag-sources {
+  display: flex;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  padding-top: var(--s-3);
+}
+
+@media (max-width: 900px) {
+  .frag-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .frag-tabs {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .frag-tabs button {
+    width: auto;
+    flex: 1 1 auto;
+    border-left: none;
+    border-top: 2px solid var(--line);
+  }
+
+  .frag-tabs button.selected {
+    border-left-color: transparent;
+    border-top-color: var(--teal);
+  }
+
+  .frag-tab-detail {
+    display: none;
+  }
+
+  .frag-view {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  /* The file metadata is nowrap and clips against the panel edge at phone widths,
+     so drop it onto its own line under the filename. */
+  .frag-file {
+    grid-template-columns: auto 1fr;
+    row-gap: var(--s-1);
+  }
+
+  .frag-file-meta {
+    grid-column: 2;
+    white-space: normal;
+  }
+
+  /* Stack the scoreboard and move the rules above each stat, since a left rule on a
+     full-width row reads as a stray vertical line. */
+  .frag-tally-stats {
+    grid-template-columns: 1fr;
+    gap: var(--s-4);
+  }
+
+  .frag-stat + .frag-stat {
+    padding-left: 0;
+    padding-top: var(--s-4);
+    border-left: none;
+    border-top: 1px solid var(--line);
+  }
+
+  .frag-tally {
+    padding: var(--s-5);
+  }
+
+  /* Long values ("Inspection · M. Reyes") need the full width to stay on one line. */
+  .frag-fields > div {
+    grid-template-columns: 1fr;
+    gap: var(--s-1);
+  }
+}
