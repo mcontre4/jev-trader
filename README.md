@@ -151,7 +151,7 @@ npm --prefix frontend run build
 npm --prefix frontend audit
 ```
 
-The full backend suite starts disposable MySQL and PostgreSQL containers and requires Docker. Provider contract tests use injected HTTP transports; they do not place live trades or prove exchange eligibility. CI runs tests, type/lint/architecture checks, and a Git-history secret scan.
+The full backend suite starts disposable MySQL and PostgreSQL containers and requires Docker. Provider contract tests use injected HTTP transports; they do not place live trades or prove exchange eligibility. CI runs tests, type/lint/architecture checks, and a Git-history secret scan. See the [verification record](docs/trading/VERIFICATION.md) for the release checks and their limits.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) before sending a change. Install [Gitleaks](https://github.com/gitleaks/gitleaks) and the hooks to check future commits:
 

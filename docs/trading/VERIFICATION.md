@@ -1,17 +1,19 @@
 # Verification record
 
-Checked September 24, 2026. This records implementation checks, not a guarantee of profitable or loss-free trading.
+Checked October 15, 2026 for the open-source release. This records implementation checks, not a guarantee of profitable or loss-free trading.
 
 ## Completed
 
-- All 71 backend tests pass, including disposable real MySQL persistence, rollback, unique cycle slots, execution-lock ownership, shutdown blocking, authenticated HTTP access, and order recovery. Existing PostgreSQL tests also pass.
+- All 71 backend tests pass, including disposable real MySQL persistence, rollback, unique cycle slots, execution-lock ownership, shutdown blocking, authenticated HTTP access, and order recovery. Existing PostgreSQL tests also pass. No production database was used.
 - The domain/application coverage gate passes at 97.30% (396 of 407 statements). Infrastructure is checked separately through integration tests.
 - All 46 frontend tests pass. The production frontend build succeeds.
 - Ruff, mypy, the role-based hexagonal boundary checker, and the Tach import graph pass. All repository pre-commit hooks pass; their always-run settings remain enabled.
-- `npm audit` reports zero vulnerabilities. `pip-audit` reports no known vulnerabilities in the installed Python dependencies; it skips the local, unpublished backend package. Existing vulnerable development dependencies were upgraded and lockfiles updated.
-- The Docker image builds and runs as a non-root user. A disposable Compose deployment starts MySQL, initializes the schema, and serves the terminal with security headers. This startup test uses blank provider credentials and reports unconfigured; it submits no orders.
-- Browser checks against an authenticated local fixture with real MySQL verified unlocking, pausing/resuming, decision history, order filtering, the 60-candle chart, and mobile layout without horizontal overflow. No browser console errors were observed. Fixture data was explicitly labeled synthetic.
-- A read-only public Coinbase product response was checked against the mapper, including actual lowercase `cde` venue values and blank product status. The inspected BTC contract's minimum notional exceeded the requested $5/$10 notional cap and its overnight margin did not permit the requested 5x policy.
+- `npm audit` reports zero vulnerabilities. `pip-audit` of the installed backend environment reports no known vulnerabilities after compatible dependency updates. The local pip tool was also updated; Docker already installs pip >=26.2. These are advisory checks, not proof that dependencies are vulnerability-free.
+- Gitleaks 8.30.1 found no secrets in the release files or reachable local Git history. Its only code false positive was the public `ec.SECP256R1` curve constant, with a documented, single-line annotation. No real credentials were found or copied. No `.env` file was present. This does not establish that credentials were never exposed outside the repository.
+- Generated coverage data was removed from the tracked tree. Environment files, private-key formats, database dumps, logs, and local recovery notes are excluded from future commits and the Docker build context. Existing Git history was retained because the scans found no credentials requiring a rewrite.
+- The production Docker image builds and runs as user `trader`. A separate local container with no provider credentials serves the built terminal, reports `configured: false`, sets security headers, and rejects protected terminal access with 503. The Compose configuration validates with placeholder environment values. A full configured Compose deployment was not exercised in this release check.
+- The two README screenshots were captured from the production UI with intercepted synthetic API responses. Unlocking, the 60-candle chart, paused preview state, decision journal, and inspector rendered without browser errors. These screenshots do not exercise live provider or database integration; see `docs/screenshots/README.md`.
+- GitHub CI runs backend tests, the 95% coverage gate, Ruff, mypy, architecture checks, frontend tests/build, and a full-history secret scan. CI actions and the scanner image are pinned. Gitleaks also runs in pre-commit; all existing always-run hooks remain enabled.
 
 ## Safety properties reviewed
 
