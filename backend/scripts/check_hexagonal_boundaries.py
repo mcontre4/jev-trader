@@ -193,9 +193,7 @@ def is_allowed_app_import(role: str, domain: str | None, imported: str) -> bool:
 # ---------------------------------------------------------------------------
 
 
-def resolve_relative_import(
-    current_module: str, level: int, module: str | None
-) -> str | None:
+def resolve_relative_import(current_module: str, level: int, module: str | None) -> str | None:
     """Resolve `from .[.]*module import ...` to an absolute dotted path."""
     if level == 0:
         return module
@@ -273,9 +271,9 @@ def _is_allowed_stdlib_import(role: str, imported: str, file: Path) -> bool:
         return True
     # shared_application defines UnitOfWork port — no stdlib volatile needed
     top = imported.split(".")[0]
-    if top in FORBIDDEN_STDLIB_FOR_INNER_LAYERS:
+    if top in FORBIDDEN_STDLIB_FOR_INNER_LAYERS and top != "datetime":
         # Allow `from app.shared.domain.clock import Clock` (app import, not stdlib)
-        # but forbid `import uuid` / `import datetime` in domain/ports/application
+        # UUID generation and randomness remain forbidden; datetime values are pure.
         # Exception: shared_domain owns PrefixedUuid which needs uuid/typing — allow uuid only there
         if role == "shared_domain":
             return True
@@ -341,7 +339,7 @@ def _check_use_case_boundaries(
                             file,
                             node.lineno,
                             f"application ({module}).{cls.name}.execute must take a single Request DTO, "
-                            f"not {len(args)-1} primitive args (use CreateUserRequest)",
+                            f"not {len(args) - 1} primitive args (use CreateUserRequest)",
                         )
                     )
     return violations
@@ -445,6 +443,19 @@ def check_file(root: Path, file: Path) -> list[Violation]:
                             )
                         )
 
+    # datetime types are immutable values; only obtaining wall-clock time is volatile.
+    # Recognize receivers assigned directly from an injected Clock-annotated argument.
+    clock_receivers: set[str] = set()
+    for cls in (n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)):
+        for method in (n for n in cls.body if isinstance(n, ast.FunctionDef)):
+            clock_args = {
+                a.arg
+                for a in method.args.args
+                if a.annotation is not None and ast.unparse(a.annotation) == "Clock"
+            }
+            for assignment in (n for n in ast.walk(method) if isinstance(n, ast.Assign)):
+                if isinstance(assignment.value, ast.Name) and assignment.value.id in clock_args:
+                    clock_receivers.update(ast.unparse(t) for t in assignment.targets)
     # Also check for direct volatile calls like uuid4() / datetime.now() in inner layers
     if role in {"domain", "ports", "application", "shared_domain", "shared_application"}:
         for node in ast.walk(tree):
@@ -454,7 +465,13 @@ def check_file(root: Path, file: Path) -> list[Violation]:
                     func_name = node.func.id
                 elif isinstance(node.func, ast.Attribute):
                     func_name = node.func.attr
-                if func_name in {"uuid4", "now"}:
+                if func_name in {"uuid4", "now", "utcnow", "today"}:
+                    if (
+                        func_name == "now"
+                        and isinstance(node.func, ast.Attribute)
+                        and ast.unparse(node.func.value) in clock_receivers
+                    ):
+                        continue
                     # Allow shared_domain PrefixedUuid.new and shared_infrastructure adapters
                     if role == "shared_domain" and "prefixed_uuid" in module:
                         continue
@@ -479,7 +496,9 @@ def _all_domains(root: Path) -> set[str]:
     for child in app_root.iterdir():
         if child.is_dir() and child.name not in {"shared", "__pycache__"}:
             # consider it a domain if it has domain/ or application/ etc.
-            if any((child / sub).is_dir() for sub in ("domain", "application", "ports", "adapters")):
+            if any(
+                (child / sub).is_dir() for sub in ("domain", "application", "ports", "adapters")
+            ):
                 domains.add(child.name)
     return domains
 
@@ -521,7 +540,9 @@ def main() -> int:
     violations = run(root)
 
     if violations:
-        print(f"Hexagonal boundary check FAILED — {len(violations)} violation(s):\n", file=sys.stderr)
+        print(
+            f"Hexagonal boundary check FAILED — {len(violations)} violation(s):\n", file=sys.stderr
+        )
         for file, lineno, msg in violations:
             rel = file.relative_to(Path.cwd()) if file.is_absolute() else file
             print(f"  {rel}:{lineno}: {msg}", file=sys.stderr)

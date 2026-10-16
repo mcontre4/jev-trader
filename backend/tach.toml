@@ -44,14 +44,34 @@ depends_on = [{ path = "app.shared.domain" }, { path = "app.shared.application" 
 path = "app.users.adapters"
 depends_on = [{ path = "app.shared.domain" }, { path = "app.shared.application" }, { path = "app.shared.infrastructure" }, { path = "app.users.domain" }, { path = "app.users.ports" }, { path = "app.users.application" }]
 
+# ── trading domain ────────────────────────────────────────────────────────
+[[modules]]
+path = "app.trading.domain"
+depends_on = [{ path = "app.shared.domain" }]
+
+[[modules]]
+path = "app.trading.ports"
+depends_on = [{ path = "app.shared.domain" }, { path = "app.trading.domain" }]
+
+[[modules]]
+path = "app.trading.application"
+depends_on = [{ path = "app.shared.domain" }, { path = "app.shared.application" }, { path = "app.trading.domain" }, { path = "app.trading.ports" }]
+
+[[modules]]
+path = "app.trading.adapters"
+depends_on = [{ path = "app.shared.domain" }, { path = "app.shared.application" }, { path = "app.shared.infrastructure" }, { path = "app.trading.domain" }, { path = "app.trading.ports" }, { path = "app.trading.application" }]
+
 # ── composition roots — allowed to wire everything (must stay at top) ──
 [[modules]]
 path = "app.users.composition"
 depends_on = [{ path = "app.shared.domain" }, { path = "app.shared.application" }, { path = "app.shared.infrastructure" }, { path = "app.users.domain" }, { path = "app.users.ports" }, { path = "app.users.application" }, { path = "app.users.adapters" }]
+[[modules]]
+path = "app.trading.composition"
+depends_on = [{ path = "app.shared.domain" }, { path = "app.shared.application" }, { path = "app.shared.infrastructure" }, { path = "app.trading.domain" }, { path = "app.trading.ports" }, { path = "app.trading.application" }, { path = "app.trading.adapters" }]
 
 [[modules]]
 path = "app.main"
-depends_on = [{ path = "app.shared.domain" }, { path = "app.shared.application" }, { path = "app.shared.infrastructure" }, { path = "app.users.domain" }, { path = "app.users.ports" }, { path = "app.users.application" }, { path = "app.users.adapters" }, { path = "app.users.composition" }]
+depends_on = [{ path = "app.trading.adapters" }, { path = "app.trading.composition" }, { path = "app.shared.domain" }, { path = "app.shared.application" }, { path = "app.shared.infrastructure" }, { path = "app.users.domain" }, { path = "app.users.ports" }, { path = "app.users.application" }, { path = "app.users.adapters" }, { path = "app.users.composition" }]
 
 # ── future domains: copy the users block ─────────────────────────────────
 # [[modules]]

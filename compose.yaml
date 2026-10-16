@@ -1,0 +1,40 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-jev_trader}
+      MYSQL_USER: ${MYSQL_USER:-jev}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - trading_mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+  init:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER:-jev}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE:-jev_trader}
+    command: ["python", "-m", "app.trading.composition", "--init-db"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+  terminal:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER:-jev}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE:-jev_trader}
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+volumes:
+  trading_mysql:
