@@ -37,7 +37,7 @@ pytest-asyncio = ">=1,<2"
 ruff = ">=0.8,<1"
 testcontainers = {version = ">=4.14,<5", extras = ["postgres"]}
 pytest-cov = "^7.1.0"
-pre-commit = "^4.6.1"
+pre-commit = "^4.7.0"
 pytest-testmon = "^2.2.0"
 
 [tool.pytest.ini_options]
